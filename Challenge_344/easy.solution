@@ -51,3 +51,18 @@ say baum_sweet ($_) for 0 .. $max;
 
 
 __END__
+
+=head2 References
+
+=over 2
+
+=item *
+
+L<Baum-Sweet sequence on Wikipedia|https://en.wikipedia.org/wiki/Baum%E2%80%93Sweet_sequence>
+
+=item *
+
+L<Sequence A086747 on OEIS|https://oeis.org/A086747>
+
+=back
+
