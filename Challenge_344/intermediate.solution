@@ -1,0 +1,117 @@
+#!/opt/perl/bin/perl
+
+use 5.026;
+
+use strict;
+use warnings;
+no  warnings 'syntax';
+
+use experimental 'signatures';
+
+# 
+# DESCRIPTION:
+# 
+# Create a program that will solve the banker’s algorithm. This
+# algorithm stops deadlocks from happening by not allowing processes
+# to start if they don't have access to the resources necessary to
+# finish. A process is allocated certain resources from the start,
+# and there are other available resources. In order for the process
+# to end, it has to have the maximum resources in each slot.
+# 
+# Ex:
+#     Process   Allocation      Max     Available
+#                  A B C       A B C      A B C
+#        P0        0 1 0       7 5 3      3 3 2
+#        P1        2 0 0       3 2 2   
+#        P2        3 0 2       9 0 2   
+#        P3        2 1 1       2 2 2   
+#        P4        0 0 2       4 3 3   
+# 
+# Since there is 3, 3, 2 available, P1 or P3 would be able to go
+# first. Let's pick P1 for the example. Next, P1 will release the
+# resources that it held, so the next available would be 5, 3, 2.
+#
+# THE CHALLENGE
+# 
+# Create a program that will read a text file with the banker's
+# algorithm in it, and output the order that the processes should go
+# in. An example of a text file would be like this:
+# 
+#     [3 3 2]
+#     [0 1 0 7 5 3]
+#     [2 0 0 3 2 2]
+#     [3 0 2 9 0 2]
+#     [2 1 1 2 2 2]
+#     [0 0 2 4 3 3]
+# 
+# And the program would print out:
+# 
+#    P1, P4, P3, P0, P2
+# 
+# BONUS
+# 
+# Have the program tell you if there is no way to complete the algorithm.
+# 
+
+@ARGV = "intermediate.input" unless @ARGV;
+
+my @resources = (<> =~ /([0-9]+)/g);
+
+my @processes;  # An array with values for each process:
+                #  0:            Index of process
+                #  1 .. N:       Already allocated resources
+                #  (N+1) .. 2N:  Required resources
+while (<>) {
+    push @processes => [$. - 2 => /([0-9]+)/g];
+}
+
+
+OUTER: while (@processes) {
+  PROCESS:
+    foreach my $p (keys @processes) {
+        my $process = $processes [$p];
+        #
+        # Can this process fullfil its request?
+        #
+        foreach my $r (keys @resources) {
+            if ($resources [$r] < $$process [$r - @resources] -
+                                  $$process [$r + 1]) {
+                #
+                # Cannot do
+                #
+                next PROCESS;
+            }
+        }
+        #
+        # Can do
+        #
+        say "P" . $$process [0];
+
+        #
+        # Release resources
+        #
+        $resources [$_] += $$process [$_ + 1] foreach keys @resources;
+
+        #
+        # Delete process
+        #
+        splice @processes, $p, 1;
+
+        #
+        # Next!
+        #
+        next OUTER;
+    }
+
+    #
+    # If we get here, it means we did not find a process which
+    # could continue. Report this, and exit the loop.
+    #
+    say "Cannot schedule";
+    last;
+}
+
+
+
+
+__END__
