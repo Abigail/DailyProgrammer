@@ -1,0 +1,70 @@
+#!/opt/perl/bin/perl
+
+use 5.026;
+
+use strict;
+use warnings;
+no  warnings 'syntax';
+
+use experimental 'signatures';
+
+
+#
+# DESCRIPTION
+#
+# Today's challenge is to divide two polynomials. For example, long
+# division can be implemented.
+# 
+# Display the quotient and remainder obtained upon division.
+# 
+# INPUT DESCRIPTION
+# 
+# Let the user enter two polynomials. Feel free to accept it as you
+# wish to. Divide the first polynomial by the second. For the sake
+# of clarity, I'm writing whole expressions in the challenge input,
+# but by all means, feel free to accept the degree and all the
+# coefficients of a polynomial.
+# 
+# OUTPUT DESCRIPTION
+# 
+# Display the remainder and quotient obtained.
+# 
+# CHALLENGE INPUT
+# 
+# 1: 4x3 + 2x2 - 6x + 3
+#    x - 3
+#
+# 2: 2x4 - 9x3 + 21x2 - 26x + 12
+#    2x - 3
+# 
+# 3: 10x4 - 7x2 -1
+#    x2 - x + 3
+#
+# CHALLENGE OUTPUT
+#  
+# 
+# 1: Quotient: 4x2 + 14x + 36 Remainder: 111
+#
+# 2: Quotient: x3 - 3x2 +6x - 4 Remainder: 0
+#
+# 3: Quotient: 10x2 + 10x - 27 Remainder: -57x + 80
+#
+
+use Puzzle::Stuff::Polynome;  # https://github.com/Abigail/Puzzle-Stuff
+
+@ARGV = "easy.input" unless @ARGV;
+
+while (<>) {
+    my ($p1, $p2) = split /\s*;\s*/;
+    my $polynome1 = Puzzle::Stuff::Polynome::
+                            -> new -> init (split /[,\s]+/ => $p1);
+    my $polynome2 = Puzzle::Stuff::Polynome::
+                            -> new -> init (split /[,\s]+/ => $p2);
+
+    my ($quotient, $remainder) = $polynome1 -> divide ($polynome2);
+
+    say "Quotient: ", $quotient  -> as_string, " ",
+        "Remainer: ", $remainder -> as_string;
+}
+
+__END__
